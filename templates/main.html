@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link href="{{ url_for('static', filename='styles.css')  }}" rel="stylesheet" type="text/css">
+    <title></title>
+    
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.8.2.js')  }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='mfs100.js')  }}"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+
+    <script type="text/javascript">
+      var quality = 60;
+      var timeout = 10; 
+		  var nooffinger = '1';
+
+      function GetInfo() {
+
+          var key = document.getElementById('txtKey').value;
+          var res;
+          if (key.length == 0) {
+              res = GetMFS100Info();
+          }
+          else {
+              alert("GetMFS100KeyInfo");
+              res = GetMFS100KeyInfo(key);
+          }
+
+          return false;
+      }
+
+      function Capture() {
+          try {
+              document.getElementById('imgFinger').src = "data:image/png;base64,";
+
+              var res = CaptureFinger(quality, timeout);
+              if (res.httpStaus) {
+                  if (res.data.ErrorCode == "0") {
+                      document.getElementById('imgFinger').src = "data:image/bmp;base64," + res.data.BitmapData;
+                      myfunction();
+                  }
+              }
+              else {
+                  alert(res.err);
+              }
+          }
+          catch (e) {
+              alert(e);
+          }
+          return false;
+      }
+
+      function myfunction() {
+
+        const username = document.getElementById("imgFinger").src;
+
+        const dict_values = {username} //Pass the javascript variables to a dictionary.
+        const s = JSON.stringify(dict_values); // Stringify converts a JavaScript object or value to JSON.
+        console.log(s); // Prints the variables to console window, which are in the JSON format
+        $.ajax({
+            url:"/convert",
+            type:"POST",
+            contentType: "application/json",
+            data: JSON.stringify(s)});
+      }
+    </script>
+
+  </head>
+ <body>
+  <div class="top">
+  FingerPrint Spoof Detection
+  <br />
+  </div>
+
+  <div class="first" >
+    <!-- <form action="/predict" action="POST"> -->
+   <table class="t1">
+   <thead>
+   Place Fingerprint on Scanner and Click Capture
+   </thead>
+   <tr>
+   <td>
+    <img  id="imgFinger" alt="fingerprint" src="{{ url_for('static', filename='faketest1.png')  }}" class="finger" style="width:150px;"/>
+   </td>
+   </tr>
+   </table>
+   <br />
+  <input type="button" name="capture" id="capture" value="CAPTURE"  onclick="return Capture()"/>
+  <!-- <input type="button" name="capture" id="capture" value="CAPTURE"  onclick="myfunction()"/> -->
+   <br />
+   <br />
+
+   <form action="/predict" action="POST">
+    <input type="submit" name="model" id="model" value="RUN MODEL"  />
+    </form>
+    <h4>  {{pred}} </h4>
+  <!-- </form> -->
+  </div>
+
+  
+
+ </body>
+</html>

@@ -1,0 +1,14 @@
+.top{
+  background-color: #F9F2ED;
+  text-align: center;
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+.first{
+text-align: center;
+background-color: #DAEAF1
+}
+
+.t1{
+    margin: 0 auto; /* or margin: 0 auto 0 auto */
+  }
